@@ -22,7 +22,7 @@ task = kpu.load('/sd/mbnet75_noact.kmodel')
 
 lcd.init(freq=15000000)
 
-if (paraFileName in paraFileName) and (lableFileName in paraFileName):
+if (paraFileName in filesInSd) and (lableFileName in filesInSd):
     print('parameter and label found, skip training.')
 else:
     print('parameter and label not found, start training.')
@@ -56,4 +56,48 @@ else:
     for i in range(labelCounter):
         f.write(labels[i]+'\n'+str(sampleCount[i])+'\n')
     f.close()
+
+del filesInSd
+labels = []
+sampleCount = []
+
+f=open('/sd/'+lableFileName, 'r')
+while True:
+    nameLine = f.readline()
+    if not nameLine:
+        break
+    countLine = f.readline()
+    if not countLine:
+        break
+    labels.append(nameLine.strip())
+    sampleCount.append(int(countLine.strip()))
+f.close()
+
+
+f=open('/sd/'+paraFileName, 'rb')
+
+result = [0]*sampleCount[-1]
+
+myImage = image.Image('/sd/ab224/photo027.jpg')
+lcd.display(myImage,oft=(0,0))
+lcd.draw_string(0, 0, "test ")
+myImage.pix_to_ai()
+fmap = kpu.forward(task, myImage)
+del myImage
+data=fmap[:]
+data=getNormalizedVec(data)
+
+f.seek(0)
+for j in range(sampleCount[-1]):
+    sum = 0
+    c = 0
+    for i in range(20):
+        readBuf = struct.unpack('50f',f.read(50*4))
+        for d in readBuf:
+            sum += data[c]*d
+            c+=1
+    result[j] = sum
+
+kParameter = min(5,len(result))
+knnResult = sorted(range(len(result)), key=lambda x: result[x])[-kParameter:]
 
