@@ -1,7 +1,7 @@
 # teachable machine - By: sundeqing - Wed Apr 29 2020
 
 import sensor, image, time, lcd
-import uos, struct, math
+import uos, struct, math, array
 import KPU as kpu
 paraFileName = "tm_parameter.bin"
 lableFileName = "tm_labels.txt"
@@ -81,7 +81,19 @@ while True:
     sampleCount.append(int(countLine.strip()))
 f.close()
 
+#load parameter to memory for faster access
+parameterList = []
 f=open('/sd/'+paraFileName, 'rb')
+for j in range(27):
+    p = array.array('f',[0] * 1000)
+    c = 0
+    for i in range(20):
+        readBuf = struct.unpack('50f',f.read(50*4))
+        for k in range(50):
+            p[c]=readBuf[k]
+            c+=1
+    parameterList.append(p)
+f.close()
 
 result = [0]*sampleCount[-1]
 
@@ -97,12 +109,9 @@ while(True):
     f.seek(0)
     for j in range(sampleCount[-1]):
         sum = 0
-        c = 0
-        for i in range(20):
-            readBuf = struct.unpack('50f',f.read(50*4))
-            for d in readBuf:
-                sum += data[c]*d
-                c+=1
+        sampleData = parameterList[j]
+        for i in range(1000):
+            sum = sum + data[i]*sampleData[i]
         result[j] = sum
 
     kParameter = min(5,len(result))
@@ -115,5 +124,6 @@ while(True):
                 break;
     objectId = fCount.index(max(fCount))
     lcd.display(img,oft=(0,0))
-    lcd.draw_string(0, 20, labels[objectId]+" "+str(int(fCount[objectId]*100/kParameter))+"%")
+    lcd.draw_string(0, 0, labels[objectId]+" "+str(int(fCount[objectId]*100/kParameter))+"%")
+    print("fps",clock.fps())
 
