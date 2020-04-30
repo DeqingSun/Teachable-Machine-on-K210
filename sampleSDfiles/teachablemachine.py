@@ -101,3 +101,11 @@ for j in range(sampleCount[-1]):
 kParameter = min(5,len(result))
 knnResult = sorted(range(len(result)), key=lambda x: result[x])[-kParameter:]
 
+fCount = [0]*len(labels)
+for n in knnResult:
+    for j in range(len(fCount)):
+        if (n<sampleCount[j]):
+            fCount[j] += 1
+            break;
+objectId = fCount.index(max(fCount))
+lcd.draw_string(0, 20, labels[objectId]+" "+str(int(fCount[objectId]*100/kParameter))+"%")
