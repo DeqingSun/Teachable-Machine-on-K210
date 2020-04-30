@@ -12,9 +12,7 @@ labels = []
 sampleCount = []
 
 def getNormalizedVec(vec):
-    s = 0
-    for i in vec:
-        s = s + i*i
+    s = sum([x*x for x in vec])
     s = 1.0/math.sqrt(s)
     return [x*s for x in vec]
 
@@ -108,11 +106,8 @@ while(True):
 
     f.seek(0)
     for j in range(sampleCount[-1]):
-        sum = 0
         sampleData = parameterList[j]
-        for i in range(1000):
-            sum = sum + data[i]*sampleData[i]
-        result[j] = sum
+        result[j] = sum([x*y for x,y in zip(data,sampleData)])
 
     kParameter = min(5,len(result))
     knnResult = sorted(range(len(result)), key=lambda x: result[x])[-kParameter:]
