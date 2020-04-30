@@ -21,6 +21,13 @@ def getNormalizedVec(vec):
 task = kpu.load('/sd/mbnet75_noact.kmodel')
 
 lcd.init(freq=15000000)
+sensor.reset()
+sensor.set_pixformat(sensor.RGB565)
+sensor.set_framesize(sensor.QVGA)
+sensor.set_windowing((224, 224))
+sensor.set_vflip(0)
+sensor.set_hmirror(0)
+sensor.run(1)
 
 if (paraFileName in filesInSd) and (lableFileName in filesInSd):
     print('parameter and label found, skip training.')
@@ -61,6 +68,7 @@ del filesInSd
 labels = []
 sampleCount = []
 
+#load labels from file
 f=open('/sd/'+lableFileName, 'r')
 while True:
     nameLine = f.readline()
@@ -73,39 +81,39 @@ while True:
     sampleCount.append(int(countLine.strip()))
 f.close()
 
-
 f=open('/sd/'+paraFileName, 'rb')
 
 result = [0]*sampleCount[-1]
 
-myImage = image.Image('/sd/ab224/photo027.jpg')
-lcd.display(myImage,oft=(0,0))
-lcd.draw_string(0, 0, "test ")
-myImage.pix_to_ai()
-fmap = kpu.forward(task, myImage)
-del myImage
-data=fmap[:]
-data=getNormalizedVec(data)
+clock = time.clock()
+while(True):
+    img = sensor.snapshot()
+    clock.tick()
 
-f.seek(0)
-for j in range(sampleCount[-1]):
-    sum = 0
-    c = 0
-    for i in range(20):
-        readBuf = struct.unpack('50f',f.read(50*4))
-        for d in readBuf:
-            sum += data[c]*d
-            c+=1
-    result[j] = sum
+    fmap = kpu.forward(task, img)
+    data=fmap[:]
+    data=getNormalizedVec(data)
 
-kParameter = min(5,len(result))
-knnResult = sorted(range(len(result)), key=lambda x: result[x])[-kParameter:]
+    f.seek(0)
+    for j in range(sampleCount[-1]):
+        sum = 0
+        c = 0
+        for i in range(20):
+            readBuf = struct.unpack('50f',f.read(50*4))
+            for d in readBuf:
+                sum += data[c]*d
+                c+=1
+        result[j] = sum
 
-fCount = [0]*len(labels)
-for n in knnResult:
-    for j in range(len(fCount)):
-        if (n<sampleCount[j]):
-            fCount[j] += 1
-            break;
-objectId = fCount.index(max(fCount))
-lcd.draw_string(0, 20, labels[objectId]+" "+str(int(fCount[objectId]*100/kParameter))+"%")
+    kParameter = min(5,len(result))
+    knnResult = sorted(range(len(result)), key=lambda x: result[x])[-kParameter:]
+    fCount = [0]*len(labels)
+    for n in knnResult:
+        for j in range(len(fCount)):
+            if (n<sampleCount[j]):
+                fCount[j] += 1
+                break;
+    objectId = fCount.index(max(fCount))
+    lcd.display(img,oft=(0,0))
+    lcd.draw_string(0, 20, labels[objectId]+" "+str(int(fCount[objectId]*100/kParameter))+"%")
+
