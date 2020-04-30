@@ -82,7 +82,7 @@ f.close()
 #load parameter to memory for faster access
 parameterList = []
 f=open('/sd/'+paraFileName, 'rb')
-for j in range(27):
+for j in range(sampleCount[-1]):
     p = array.array('f',[0] * 1000)
     c = 0
     for i in range(20):
