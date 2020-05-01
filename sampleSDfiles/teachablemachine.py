@@ -69,6 +69,13 @@ del filesInSd
 labels = []
 sampleCount = []
 
+lcd.draw_string(236, 10, "Teachable",lcd.WHITE)
+lcd.draw_string(236, 25, "Machine",lcd.WHITE)
+lcd.draw_string(236, 40, "on K210",lcd.WHITE)
+
+lcd.draw_string(236, 195, "Ported by",lcd.WHITE)
+lcd.draw_string(236, 210, "Deqing",lcd.WHITE)
+
 #load labels from file
 f=open('/sd/'+lableFileName, 'r')
 while True:
@@ -102,12 +109,11 @@ while(True):
     clock.tick()
 
     fmap = kpu.forward(task, img)
-    data=fmap[:]
-    data=np.array(getNormalizedVec(data),dtype=np.float).transpose()
+    data=np.array(getNormalizedVec(fmap[:]),dtype=np.float).transpose()
 
     result = np.linalg.dot(parameterList,data).flatten()
 
-    kParameter = min(5,len(result))
+    kParameter = min(5,len(result))# 5 nearest neighbors, or total samples if less
     knnResult = sorted(range(len(result)), key=lambda x: result[x])[-kParameter:]
     fCount = [0]*len(labels)
     for n in knnResult:
@@ -117,6 +123,6 @@ while(True):
                 break;
     objectId = fCount.index(max(fCount))
     lcd.display(img,oft=(0,0))
-    lcd.draw_string(0, 0, labels[objectId]+" "+str(int(fCount[objectId]*100/kParameter))+"%")
+    lcd.draw_string(0, 224, labels[objectId]+" "+str(int(fCount[objectId]*100/kParameter))+"%          ",lcd.WHITE)
     print("fps",clock.fps())
 
