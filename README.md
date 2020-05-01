@@ -30,6 +30,8 @@ Now you can insert the micro SD card into the Sipeed M1 Dock Kit while unpowered
 
 What if you want to change sample images and classes? Let's say you want to distinguish a watermelon and an ear of corn (2 classes this time). You can remove ```tm_apple```, ```tm_banana```, and ```tm_empty``` folders, create ```tm_watermelon ``` and ```tm_corn``` folder. Then you can put a few 224x224 color jpg sample files into those 2 folders. In the end, remove ```tm_parameter.bin``` and ```tm_labels.txt```, and the training process will happen again the next time you power up. Then the little machine will start to distinguish a watermelon and an ear of corn. 
 
+There is also a ```cam.py``` file, you may copy the content of ```cam.py``` to replace ```main.py```. When it is running, you may press the boot button on the Sipeed M1 Dock to take pictures. Those pictures may be uses as sample images.
+
 ## Link to the technical detail of Teachable Machine
 
 <https://observablehq.com/@nsthorat/how-to-build-a-teachable-machine-with-tensorflow-js>
