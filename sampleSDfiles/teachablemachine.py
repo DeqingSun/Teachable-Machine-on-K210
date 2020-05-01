@@ -1,8 +1,11 @@
 # teachable machine - By: sundeqing - Wed Apr 29 2020
 
+#make sure firmware has a new ulab lib that fixed dot product issue
 import sensor, image, time, lcd
 import uos, struct, math, array
 import KPU as kpu
+import ulab as np
+
 paraFileName = "tm_parameter.bin"
 lableFileName = "tm_labels.txt"
 
@@ -79,21 +82,19 @@ while True:
     sampleCount.append(int(countLine.strip()))
 f.close()
 
+totalSample = sampleCount[-1]
+
 #load parameter to memory for faster access
-parameterList = []
+parameterList = np.zeros((totalSample,1000), dtype=np.float)
 f=open('/sd/'+paraFileName, 'rb')
-for j in range(sampleCount[-1]):
-    p = array.array('f',[0] * 1000)
+for j in range(totalSample):
     c = 0
     for i in range(20):
         readBuf = struct.unpack('50f',f.read(50*4))
         for k in range(50):
-            p[c]=readBuf[k]
+            parameterList[j,c]=readBuf[k]
             c+=1
-    parameterList.append(p)
 f.close()
-
-result = [0]*sampleCount[-1]
 
 clock = time.clock()
 while(True):
@@ -102,12 +103,9 @@ while(True):
 
     fmap = kpu.forward(task, img)
     data=fmap[:]
-    data=getNormalizedVec(data)
+    data=np.array(getNormalizedVec(data),dtype=np.float).transpose()
 
-    f.seek(0)
-    for j in range(sampleCount[-1]):
-        sampleData = parameterList[j]
-        result[j] = sum([x*y for x,y in zip(data,sampleData)])
+    result = np.linalg.dot(parameterList,data).flatten()
 
     kParameter = min(5,len(result))
     knnResult = sorted(range(len(result)), key=lambda x: result[x])[-kParameter:]
