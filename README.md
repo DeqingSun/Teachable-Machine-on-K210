@@ -12,6 +12,6 @@
 
 ## Photo of K210 detecting objects
 
-![Script running with nothing in view](https://raw.githubusercontent.com/DeqingSun/Teachable-Machine-on-K210/master/images/sample_empty.jpg)
-![Script running with apple in view](https://raw.githubusercontent.com/DeqingSun/Teachable-Machine-on-K210/master/images/sample_apple.jpg)
-![Script running with banana in view](https://raw.githubusercontent.com/DeqingSun/Teachable-Machine-on-K210/master/images/sample_banana.jpg)
+<img src="https://raw.githubusercontent.com/DeqingSun/Teachable-Machine-on-K210/master/images/sample_empty.jpg"  width="300">
+<img src="https://raw.githubusercontent.com/DeqingSun/Teachable-Machine-on-K210/master/images/sample_apple.jpg"  width="300">
+<img src="https://raw.githubusercontent.com/DeqingSun/Teachable-Machine-on-K210/master/images/sample_banana.jpg"  width="300">
