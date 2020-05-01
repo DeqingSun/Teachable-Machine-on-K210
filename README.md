@@ -2,7 +2,7 @@
 
 This is a project porting [Teachable Machine](https://teachablemachine.withgoogle.com/) project to K210 platform. Instead of running in a browser, this project running on a piece of low-cost hardware.
 
-Just like the original Teachable Machine project. No code is needed to play with this project. If you need to change sample and classifying classes, all you need to do is to put the micro-sd card into a computer, drag, and delete a few files. All training will happen the next time you power on the board, and the project will recognize new objects. 
+Just like the original Teachable Machine project. No coding is needed to play with this project. If you need to change sample and classifying classes, all you need to do is to put the micro-sd card into a computer, drag, and delete a few files. All training will happen the next time you power on the board, and the project will recognize new objects. 
 
 All code of this project is open-sourced and written in Python. It would be easy for you to modify the project, change output, or connect lights, motors, etc. The hardware can be easily embedded into your project.
 
