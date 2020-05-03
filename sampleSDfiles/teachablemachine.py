@@ -43,7 +43,7 @@ else:
             classPath = '/sd/' + info[0]
             imgFileNames = uos.listdir(classPath)
             for imgFileName in imgFileNames:
-                if not imgFileName.startswith('.'): #avoid trash on mac
+                if (not imgFileName.startswith('.')) and imgFileName.endswith('.jpg'): #avoid trash on mac
                     myImage = image.Image(classPath+"/"+imgFileName)
                     lcd.display(myImage,oft=(0,0))
                     lcd.draw_string(0, 0, "Training "+imgFileName)
